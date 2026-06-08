@@ -11,7 +11,7 @@ MAX_RETRIES = 3
 
 
 def fetch_by_year(endpoint: str) -> pd.DataFrame:
-    """Endpunkte, die year direkt unterstützen (drivers, meetings, sessions)."""
+    """Endpunkte die year direkt unterstützen (meetings, sessions)."""
     r = requests.get(f"{BASE_URL}/{endpoint}", params={"year": YEAR})
     r.raise_for_status()
     data = r.json()
@@ -19,7 +19,7 @@ def fetch_by_year(endpoint: str) -> pd.DataFrame:
 
 
 def fetch_by_session(endpoint: str, session_keys: list[int]) -> pd.DataFrame:
-    """Endpunkte, die nur session_key als Filter kennen — iteriert über alle Sessions."""
+    """Endpunkte die nur session_key als Filter kennen."""
     frames = []
     total = len(session_keys)
     for i, key in enumerate(session_keys, 1):
@@ -60,7 +60,7 @@ def save(df: pd.DataFrame, name: str) -> None:
 
 
 def derive_starting_grid(positions: pd.DataFrame) -> pd.DataFrame:
-    positions["date"] = pd.to_datetime(positions["date"])
+    positions["date"] = pd.to_datetime(positions["date"], format='ISO8601')
     return (
         positions
         .sort_values("date")
@@ -70,7 +70,7 @@ def derive_starting_grid(positions: pd.DataFrame) -> pd.DataFrame:
 
 
 def derive_session_results(positions: pd.DataFrame) -> pd.DataFrame:
-    positions["date"] = pd.to_datetime(positions["date"])
+    positions["date"] = pd.to_datetime(positions["date"], format='ISO8601')
     return (
         positions
         .sort_values("date")
@@ -82,17 +82,12 @@ def derive_session_results(positions: pd.DataFrame) -> pd.DataFrame:
 def main():
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    # ── 1. Drivers ───────────────────────────────────────────────────────────
-    print("Lade Drivers...")
-    drivers = fetch_by_year("drivers")
-    save(drivers, f"f1_drivers_{YEAR}")
-
-    # ── 2. Meetings ──────────────────────────────────────────────────────────
-    print("\nLade Meetings...")
+    # ── 1. Meetings ──────────────────────────────────────────────────────────
+    print("Lade Meetings...")
     meetings = fetch_by_year("meetings")
     save(meetings, f"f1_meetings_{YEAR}")
 
-    # ── 3. Sessions ──────────────────────────────────────────────────────────
+    # ── 2. Sessions ──────────────────────────────────────────────────────────
     print("\nLade Sessions...")
     sessions = fetch_by_year("sessions")
     save(sessions, f"f1_sessions_{YEAR}")
@@ -104,7 +99,12 @@ def main():
     sessions["date_end"] = pd.to_datetime(sessions["date_end"], utc=True)
     past_sessions = sessions[sessions["date_end"] < pd.Timestamp.now(tz="UTC")]
     session_keys = past_sessions["session_key"].dropna().astype(int).tolist()
-    print(f"{len(session_keys)} abgeschlossene Sessions aus {YEAR} gefunden.\n")
+    print(f"{len(session_keys)} abgeschlossene Sessions gefunden.\n")
+
+    # ── 3. Drivers ───────────────────────────────────────────────────────────
+    print("Lade Drivers...")
+    drivers = fetch_by_session("drivers", session_keys)
+    save(drivers, f"f1_drivers_{YEAR}")
 
     # ── 4. Weather ───────────────────────────────────────────────────────────
     print("Lade Weather...")
@@ -116,9 +116,10 @@ def main():
     laps = fetch_by_session("laps", session_keys)
     save(laps, f"f1_laps_{YEAR}")
 
-    # ── 6 & 7. Position → Starting Grid + Session Results ───────────────────
+    # ── 6. Positions → Starting Grid + Session Results ───────────────────────
     print("\nLade Position-Daten...")
     positions = fetch_by_session("position", session_keys)
+    save(positions, f"f1_positions_{YEAR}")
 
     if not positions.empty:
         print("Leite Starting Grid ab...")
