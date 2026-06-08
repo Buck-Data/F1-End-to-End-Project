@@ -1,0 +1,12 @@
+version: 2
+
+models:
+  - name: fact_race_results
+    description: "Sessions joined with driver info, base fact table for race results"
+
+  - name: fact_lap_times
+    description: "Lap times enriched with driver and session context"
+    columns:
+      - name: lap_duration
+        tests:
+          - not_null

@@ -1,0 +1,30 @@
+[0m16:35:11.661837 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'start', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001E72987A120>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001E72658B250>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001E72AC4FED0>]}
+
+
+============================== 16:35:11.664785 | a7ebb50a-ff09-4921-b8d4-ba5eb7ad5cb5 ==============================
+[0m16:35:11.664785 [info ] [MainThread]: Running with dbt=1.11.11
+[0m16:35:11.665223 [debug] [MainThread]: running dbt with arguments {'version_check': 'True', 'no_print': 'None', 'static_parser': 'True', 'warn_error_options': 'WarnErrorOptionsV2(error=[], warn=[], silence=[])', 'target_path': 'None', 'printer_width': '80', 'write_json': 'True', 'introspect': 'True', 'log_cache_events': 'False', 'empty': 'None', 'cache_selected_only': 'False', 'fail_fast': 'False', 'debug': 'False', 'log_format': 'default', 'profiles_dir': 'C:\\Users\\Bock\\.dbt', 'send_anonymous_usage_stats': 'True', 'quiet': 'False', 'warn_error': 'None', 'partial_parse': 'True', 'indirect_selection': 'eager', 'invocation_command': 'dbt init f1_analytics', 'use_colors': 'True', 'use_experimental_parser': 'False', 'log_path': 'logs'}
+[0m16:35:11.677251 [info ] [MainThread]: Creating dbt configuration folder at C:\Users\Bock\.dbt
+[0m16:35:11.678959 [debug] [MainThread]: Starter project path: C:\Users\Bock\Desktop\Persönlich\PowerBI\Projekt\F1\venv\Lib\site-packages\dbt\include\starter_project
+[0m16:35:11.693884 [info ] [MainThread]: 
+Your new dbt project "f1_analytics" was created!
+
+For more information on how to configure the profiles.yml file,
+please consult the dbt documentation here:
+
+  https://docs.getdbt.com/docs/configure-your-profile
+
+One more thing:
+
+Need help? Don't hesitate to reach out to us via GitHub issues or on Slack:
+
+  https://community.getdbt.com/
+
+Happy modeling!
+
+[0m16:35:11.694260 [info ] [MainThread]: Setting up your profile.
+[0m16:35:37.223418 [info ] [MainThread]: Profile f1_analytics written to C:\Users\Bock\.dbt\profiles.yml using target's sample configuration. Once updated, you'll be able to start developing with dbt.
+[0m16:35:37.224260 [debug] [MainThread]: Command `dbt init` succeeded at 16:35:37.224175 after 25.64 seconds
+[0m16:35:37.224464 [debug] [MainThread]: Sending event: {'category': 'dbt', 'action': 'invocation', 'label': 'end', 'context': [<snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001E72AC62EA0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001E729EF9FD0>, <snowplow_tracker.self_describing_json.SelfDescribingJson object at 0x000001E72C16C7C0>]}
+[0m16:35:37.224667 [debug] [MainThread]: Flushing usage events
+[0m16:35:38.234119 [debug] [MainThread]: An error was encountered while trying to flush usage events

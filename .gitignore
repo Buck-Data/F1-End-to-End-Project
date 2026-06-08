@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+*.egg-info/
+
+# DuckDB
+*.duckdb
+*.duckdb.wal
+
+# Daten - raw und processed nicht ins Repo
+data/raw/
+data/processed/
+
+# dbt
+transform/f1_analytics/target/
+transform/f1_analytics/logs/
+transform/f1_analytics/dbt_packages/
+
+# Power BI
+*.pbix
+
+# OS
+.DS_Store
+Thumbs.db
+
+# IDE
+.vscode/
+.idea/
