@@ -34,11 +34,15 @@ jobs:
           dbt run
         env:
           DBT_PROFILES_DIR: ${{ github.workspace }}/.dbt
+          DUCKDB_PATH: ${{ github.workspace }}/warehouse/f1.duckdb
 
       - name: dbt testen
         run: |
           cd transform/f1_analytics
           dbt test
+        env:
+          DBT_PROFILES_DIR: ${{ github.workspace }}/.dbt
+          DUCKDB_PATH: ${{ github.workspace }}/warehouse/f1.duckdb
 
       - name: Parquet exportieren
         run: python warehouse/export_parquet.py
