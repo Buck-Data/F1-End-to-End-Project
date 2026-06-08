@@ -1,0 +1,44 @@
+name: F1 Data Pipeline
+
+on:
+  schedule:
+    - cron: '0 6 * * 1'  # Jeden Montag 06:00 UTC (nach Rennwochenende)
+  workflow_dispatch:       # Manueller Start jederzeit möglich
+
+jobs:
+  run_pipeline:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Python einrichten
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Abhängigkeiten installieren
+        run: |
+          pip install duckdb pandas pyarrow requests dbt-core dbt-duckdb
+
+      - name: ETL ausführen
+        run: python ingestion/openf1_etl.py
+
+      - name: DuckDB laden
+        run: python warehouse/load_to_duckdb.py
+
+      - name: dbt ausführen
+        run: |
+          cd transform/f1_analytics
+          dbt run
+        env:
+          DBT_PROFILES_DIR: ${{ github.workspace }}/.dbt
+
+      - name: dbt testen
+        run: |
+          cd transform/f1_analytics
+          dbt test
+
+      - name: Parquet exportieren
+        run: python warehouse/export_parquet.py
