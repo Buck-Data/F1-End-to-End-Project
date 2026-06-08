@@ -4,7 +4,7 @@ import os
 os.makedirs("data/processed", exist_ok=True)
 
 con = duckdb.connect("warehouse/f1.duckdb", read_only=True)
-marts = ["fact_race_results", "fact_lap_times", "fct_weather"]
+marts = ["fact_race_results", "fact_lap_times", "fact_weather"]
 
 for mart in marts:
     con.execute(f"""
