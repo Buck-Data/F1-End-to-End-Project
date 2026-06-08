@@ -25,6 +25,9 @@ jobs:
       - name: ETL ausführen
         run: python ingestion/openf1_etl.py
 
+      - name: Verzeichnisse anlegen
+        run: mkdir -p warehouse data/raw
+
       - name: DuckDB laden
         run: python warehouse/load_to_duckdb.py
 

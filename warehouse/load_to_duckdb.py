@@ -1,8 +1,11 @@
+import os
 import duckdb
 import pandas as pd
 from pathlib import Path
 
-con = duckdb.connect("warehouse/f1.duckdb")
+db_path = os.environ.get("DUCKDB_PATH", "warehouse/f1.duckdb")
+Path(db_path).parent.mkdir(parents=True, exist_ok=True)
+con = duckdb.connect(db_path)
 con.execute("CREATE SCHEMA IF NOT EXISTS raw")
 
 raw_path = Path("data/raw")
