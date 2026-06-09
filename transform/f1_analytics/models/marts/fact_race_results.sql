@@ -21,12 +21,10 @@ SELECT
     d.country_code      AS driver_country,
 
     l.lap_number,
-    l.lap_duration,
+    l.lap_time,
     l.duration_sector_1,
     l.duration_sector_2,
     l.duration_sector_3,
-    l.i1_speed,
-    l.i2_speed,
     l.st_speed,
     l.is_pit_out_lap
 

@@ -5,7 +5,7 @@ SELECT
     printf('%d:%02d.%03d',
            FLOOR(lap_duration / 60)::INT,
            (FLOOR(lap_duration) % 60)::INT,
-           ROUND((lap_duration - FLOOR(lap_duration)) * 1000)cdf::INT
+           ROUND((lap_duration - FLOOR(lap_duration)) * 1000)::INT
            ) AS lap_time,
     duration_sector_1,
     duration_sector_2,

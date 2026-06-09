@@ -21,3 +21,7 @@ sources:
         description: "Final positions per driver per session"
       - name: starting_grid
         description: "Starting grid positions per session"
+      - name: championship_drivers
+        description: "Driver championship standings per race session"
+      - name: championship_teams
+        description: "Constructor championship standings per race session"

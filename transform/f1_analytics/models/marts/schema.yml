@@ -13,7 +13,7 @@ models:
       - name: lap_number
         tests:
           - not_null
-      - name: lap_duration
+      - name: lap_time
         tests:
           - not_null
 
@@ -29,7 +29,7 @@ models:
       - name: lap_number
         tests:
           - not_null
-      - name: lap_duration
+      - name: lap_time
         tests:
           - not_null
 

@@ -1,0 +1,14 @@
+{
+  "mtimes": {
+    "f1_drivers_2026.parquet": 1781007337.4121726,
+    "f1_laps_2026.parquet": 1781007337.4200976,
+    "f1_meetings_2026.parquet": 1781015311.6931605,
+    "f1_sessions_2026.parquet": 1781015311.9399624,
+    "f1_weather_2026.parquet": 1781007337.4468763,
+    "f1_positions_2026.parquet": 1781007337.4271178,
+    "f1_starting_grid_2026.parquet": 1781007337.4418738,
+    "f1_session_results_2026.parquet": 1781007337.432128,
+    "f1_championship_drivers_2026.parquet": 1781015455.548416,
+    "f1_championship_teams_2026.parquet": 1781015518.6985588
+  }
+}

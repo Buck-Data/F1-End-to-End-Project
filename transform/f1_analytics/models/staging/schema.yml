@@ -84,8 +84,9 @@ models:
         tests:
           - not_null
           - relationships:
-              to: ref('stg_sessions')
-              field: session_key
+              arguments:
+                to: ref('stg_sessions')
+                field: session_key
       - name: driver_number
         tests:
           - not_null
@@ -116,3 +117,50 @@ models:
       - name: humidity
         tests:
           - not_null
+
+  - name: stg_championship_drivers
+    description: "Driver championship standings per race session"
+    columns:
+      - name: session_key
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_sessions')
+                field: session_key
+      - name: driver_number
+        tests:
+          - not_null
+      - name: meeting_key
+        tests:
+          - not_null
+      - name: points_current
+        tests:
+          - not_null
+      - name: position_current
+        tests:
+          - not_null
+
+  - name: stg_championship_teams
+    description: "Constructor championship standings per race session"
+    columns:
+      - name: session_key
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_sessions')
+                field: session_key
+      - name: team_name
+        tests:
+          - not_null
+      - name: meeting_key
+        tests:
+          - not_null
+      - name: points_current
+        tests:
+          - not_null
+      - name: position_current
+        tests:
+          - not_null
+

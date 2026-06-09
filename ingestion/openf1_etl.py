@@ -1,3 +1,4 @@
+import argparse
 import json
 import time
 import threading
@@ -181,6 +182,7 @@ def main():
     new_laps = fetch_by_session("laps", new_keys)
     append_or_create(new_laps, f"f1_laps_{YEAR}")
 
+
     # ── 6. Positions → Starting Grid + Session Results ───────────────────────
     print("\nLade Position-Daten (neu)...")
     new_positions = fetch_by_session("position", new_keys)
@@ -195,6 +197,15 @@ def main():
     else:
         print("[SKIP] Starting Grid & Session Results — keine Positionsdaten")
 
+    # --- 7. Championship Driver
+    print("\nLade Championship Drivers (neu)...")
+    new_championship_drivers = fetch_by_session("championship_drivers", new_keys)
+    append_or_create(new_championship_drivers, f"f1_championship_drivers_{YEAR}")
+
+    print("\nLade Championship Teams (neu)...")
+    new_championship_teams = fetch_by_session("championship_teams", new_keys)
+    append_or_create(new_championship_teams, f"f1_championship_teams_{YEAR}")
+
     # ── State aktualisieren ──────────────────────────────────────────────────
     state["processed_session_keys"] = sorted(already_done | all_keys)
     save_state(state)
@@ -202,5 +213,31 @@ def main():
     print("Fertig. Alle Dateien liegen in:", OUTPUT_DIR.resolve())
 
 
+def backfill(endpoints: list[str]) -> None:
+    """Lädt einen oder mehrere Endpoints für alle bekannten Sessions nach."""
+    OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
+    state = load_state()
+    all_keys = sorted(state["processed_session_keys"])
+    if not all_keys:
+        print("Keine bekannten Sessions im State — zuerst normalen Lauf ausführen.")
+        return
+    print(f"Backfill für {len(all_keys)} Sessions: {endpoints}\n")
+    for endpoint in endpoints:
+        print(f"Lade {endpoint}...")
+        df = fetch_by_session(endpoint, all_keys)
+        append_or_create(df, f"f1_{endpoint}_{YEAR}")
+    print("\nBackfill abgeschlossen.")
+
+
 if __name__ == "__main__":
-    main()
+    parser = argparse.ArgumentParser()
+    parser.add_argument(
+        "--backfill", nargs="+", metavar="ENDPOINT",
+        help="Endpoints für alle bekannten Sessions nachladen"
+    )
+    args = parser.parse_args()
+
+    if args.backfill:
+        backfill(args.backfill)
+    else:
+        main()
