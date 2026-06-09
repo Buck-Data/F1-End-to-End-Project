@@ -9,6 +9,47 @@ models:
         tests:
           - not_null
           - unique
+      - name: meeting_key
+        description: "Foreign key to stg_meetings"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_meetings')
+              field: meeting_key
+      - name: session_type
+        description: "Type of session"
+        tests:
+          - not_null
+          - accepted_values:
+              values:
+                - 'Practice 1'
+                - 'Practice 2'
+                - 'Practice 3'
+                - 'Qualifying'
+                - 'Race'
+                - 'Sprint'
+                - 'Sprint Qualifying'
+                - 'Sprint Shootout'
+      - name: date_start
+        tests:
+          - not_null
+
+  - name: stg_meetings
+    description: "F1 Grand Prix weekends, 2026 season"
+    columns:
+      - name: meeting_key
+        description: "Unique meeting identifier"
+        tests:
+          - not_null
+          - unique
+      - name: meeting_name
+        tests:
+          - not_null
+      - name: year
+        tests:
+          - not_null
+          - accepted_values:
+              values: [2026]
 
   - name: stg_drivers
     description: "F1 drivers per session, 2026 season"
@@ -17,11 +58,61 @@ models:
         description: "Driver race number"
         tests:
           - not_null
+      - name: session_key
+        description: "Foreign key to stg_sessions"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_sessions')
+              field: session_key
+      - name: full_name
+        tests:
+          - not_null
+      - name: team_name
+        tests:
+          - not_null
+      - name: image_url
+        description: "Custom driver portrait URL (ersetzt headshot_url)"
+      - name: teamshot_url
+        description: "Team logo URL"
 
   - name: stg_laps
     description: "Lap times per driver and session, nulls removed"
     columns:
+      - name: session_key
+        description: "Foreign key to stg_sessions"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_sessions')
+              field: session_key
+      - name: driver_number
+        tests:
+          - not_null
+      - name: lap_number
+        tests:
+          - not_null
       - name: lap_duration
         description: "Total lap time in seconds"
+        tests:
+          - not_null
+
+  - name: stg_weather
+    description: "Weather conditions per session"
+    columns:
+      - name: session_key
+        description: "Foreign key to stg_sessions"
+        tests:
+          - not_null
+          - relationships:
+              to: ref('stg_sessions')
+              field: session_key
+      - name: date
+        tests:
+          - not_null
+      - name: air_temperature
+        tests:
+          - not_null
+      - name: humidity
         tests:
           - not_null

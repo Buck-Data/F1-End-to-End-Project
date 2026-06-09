@@ -2,11 +2,49 @@ version: 2
 
 models:
   - name: fact_race_results
-    description: "Sessions joined with driver info, base fact table for race results"
+    description: "Sessions joined with driver info and lap data, base fact table for race results"
+    columns:
+      - name: session_key
+        tests:
+          - not_null
+      - name: driver_number
+        tests:
+          - not_null
+      - name: lap_number
+        tests:
+          - not_null
+      - name: lap_duration
+        tests:
+          - not_null
 
   - name: fact_lap_times
     description: "Lap times enriched with driver and session context"
     columns:
+      - name: session_key
+        tests:
+          - not_null
+      - name: driver_number
+        tests:
+          - not_null
+      - name: lap_number
+        tests:
+          - not_null
       - name: lap_duration
+        tests:
+          - not_null
+
+  - name: fact_weather
+    description: "Weather data enriched with session and meeting context"
+    columns:
+      - name: session_key
+        tests:
+          - not_null
+      - name: date
+        tests:
+          - not_null
+      - name: air_temperature
+        tests:
+          - not_null
+      - name: humidity
         tests:
           - not_null

@@ -1,0 +1,23 @@
+version: 2
+
+sources:
+  - name: raw
+    schema: raw
+    description: "Raw F1 data loaded from OpenF1 API via Python ETL"
+    tables:
+      - name: drivers
+        description: "F1 drivers per session"
+      - name: laps
+        description: "Lap times per driver and session"
+      - name: meetings
+        description: "F1 race meetings (Grand Prix weekends)"
+      - name: sessions
+        description: "F1 sessions (practice, qualifying, race)"
+      - name: weather
+        description: "Weather conditions per session"
+      - name: positions
+        description: "Car positions during race sessions"
+      - name: session_results
+        description: "Final positions per driver per session"
+      - name: starting_grid
+        description: "Starting grid positions per session"

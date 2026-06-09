@@ -1,0 +1,15 @@
+version: 2
+
+seeds:
+  - name: driver_images
+    description: "Custom driver portrait and team logo URLs"
+    columns:
+      - name: driver_number
+        description: "Driver race number (Join-Key zu stg_drivers)"
+        tests:
+          - not_null
+          - unique
+      - name: image_url
+        description: "Driver portrait URL"
+      - name: teamshot_url
+        description: "Team logo URL"
