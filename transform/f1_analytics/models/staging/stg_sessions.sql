@@ -7,7 +7,6 @@ SELECT
     country_name,
     circuit_short_name,
     date_start,
-    gmt_offset,
     is_cancelled
 FROM raw.sessions
 WHERE is_cancelled = false

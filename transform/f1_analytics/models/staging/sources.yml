@@ -25,3 +25,5 @@ sources:
         description: "Driver championship standings per race session"
       - name: championship_teams
         description: "Constructor championship standings per race session"
+      - name: stints
+        description: "Tyre stints per driver and session"

@@ -8,11 +8,16 @@ OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 con = duckdb.connect(str(DB_PATH), read_only=True)
 
 marts = [
-    "fact_race_results",
     "fact_lap_times",
     "fact_weather",
-    "stg_championship_drivers",
-    "stg_championship_teams",
+    "fact_championship_drivers",
+    "fact_championship_teams",
+    "dim_drivers",
+    "dim_meetings",
+    "dim_sessions",
+    "fact_positions",
+    "fact_sector_times",
+    "fact_stints",
 ]
 
 for mart in marts:

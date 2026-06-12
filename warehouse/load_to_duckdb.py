@@ -18,6 +18,7 @@ FILES = {
     "session_results": "f1_session_results_2026.parquet",
     "championship_drivers": "f1_championship_drivers_2026.parquet",
     "championship_teams": "f1_championship_teams_2026.parquet",
+    "stints":             "f1_stints_2026.parquet",
 }
 
 

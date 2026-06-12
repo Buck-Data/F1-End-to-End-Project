@@ -206,6 +206,11 @@ def main():
     new_championship_teams = fetch_by_session("championship_teams", new_keys)
     append_or_create(new_championship_teams, f"f1_championship_teams_{YEAR}")
 
+    # ── 8. Stints ────────────────────────────────────────────────────────────
+    print("\nLade Stints (neu)...")
+    new_stints = fetch_by_session("stints", new_keys)
+    append_or_create(new_stints, f"f1_stints_{YEAR}")
+
     # ── State aktualisieren ──────────────────────────────────────────────────
     state["processed_session_keys"] = sorted(already_done | all_keys)
     save_state(state)

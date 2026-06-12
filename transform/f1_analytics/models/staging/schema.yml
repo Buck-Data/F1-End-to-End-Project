@@ -163,4 +163,49 @@ models:
       - name: position_current
         tests:
           - not_null
+  - name: stg_stints
+    description: "Tyre stints per driver and session"
+    columns:
+      - name: session_key
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_sessions')
+                field: session_key
+      - name: driver_number
+        tests:
+          - not_null
+      - name: stint_number
+        tests:
+          - not_null
+      - name: compound
+        tests:
+          - not_null
+          - accepted_values:
+              arguments:
+                values: ['SOFT', 'MEDIUM', 'HARD', 'INTERMEDIATE', 'WET', 'TEST_UNKNOWN']
+
+  - name: stg_positions
+    description: "Driver positions session"
+    columns:
+      - name: session_key
+        tests:
+          - not_null
+          - relationships:
+              arguments:
+                to: ref('stg_sessions')
+                field: session_key
+      - name: driver_number
+        tests:
+          - not_null
+      - name: date
+        tests:
+          - not_null
+      - name: meeting_key
+        tests:
+          - not_null    
+      - name: position
+        tests:
+          - not_null
 
