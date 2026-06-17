@@ -1,78 +1,78 @@
-# F1 Analytics – End-to-End Data Pipeline
+# F1 Analytics – End-to-End Datenpipeline
 
-> A production-grade ELT pipeline for Formula 1 telemetry and race data — from REST API ingestion to an interactive Power BI dashboard — built entirely with open-source tooling.
+> Eine produktionsreife ELT-Pipeline für Formel-1-Telemetrie und Renndaten — von der REST-API-Anbindung bis zum interaktiven Power-BI-Dashboard — vollständig mit Open-Source-Technologien gebaut.
 
 ![Python](https://img.shields.io/badge/Python-3.11-blue)
 ![dbt](https://img.shields.io/badge/dbt-1.11-orange)
 ![DuckDB](https://img.shields.io/badge/DuckDB-1.10-yellow)
 ![Power BI](https://img.shields.io/badge/Power%20BI-Dashboard-gold)
-![CI/CD](https://img.shields.io/badge/GitHub%20Actions-weekly-green)
+![CI/CD](https://img.shields.io/badge/GitHub%20Actions-wöchentlich-green)
 
 ---
 
-## What This Project Does
+## Was dieses Projekt macht
 
-Every Monday after a race weekend, a GitHub Actions pipeline automatically:
+Jeden Montag nach einem Rennwochenende führt eine GitHub-Actions-Pipeline automatisch folgende Schritte aus:
 
-1. Fetches new F1 session data from the OpenF1 REST API
-2. Loads it incrementally into a local DuckDB warehouse
-3. Transforms it through a dbt star schema (staging → dims → facts)
-4. Validates data quality with 60+ automated tests
-5. Exports Parquet files ready for Power BI
+1. Neue F1-Sessiondaten von der OpenF1-REST-API abrufen
+2. Inkrementell in ein lokales DuckDB-Warehouse laden
+3. Über ein dbt-Sternschema transformieren (Staging → Dims → Facts)
+4. Datenqualität mit 69 automatisierten Tests validieren
+5. Parquet-Dateien für Power BI exportieren
 
-The result is an always-up-to-date dashboard covering lap times, sector analysis, tyre strategies, championship standings, and weather correlations across the entire 2026 season.
+Das Ergebnis ist ein stets aktuelles Dashboard mit Rundenzeiten, Sektoranalysen, Reifenstrategien, WM-Standings und Wetterkorrelationen für die gesamte Saison 2026.
 
 ---
 
-## Architecture
+## Architektur
 
 ```
-OpenF1 REST API  (10 endpoints)
+OpenF1 REST API  (10 Endpunkte)
         │
         ▼
-Python ETL                    incremental loading · parallel fetching (4 workers)
-  openf1_etl.py               retry logic · state tracking · backfill support
+Python ETL                    Inkrementelles Laden · Parallele Abfragen (4 Worker)
+  openf1_etl.py               Retry-Logik · State-Tracking · Backfill-Unterstützung
         │
         ▼  Parquet → data/raw/
-DuckDB Warehouse              mtime-based change detection
-  load_to_duckdb.py           skips unchanged files on reload
+DuckDB Warehouse              mtime-basierte Änderungserkennung
+  load_to_duckdb.py           Unveränderte Dateien werden übersprungen
         │
         ▼  raw schema
-dbt Core                      staging → dims → facts
-  transform/f1_analytics/     69 data tests · referential integrity · accepted_values
+dbt Core                      Staging → Dims → Facts
+  transform/f1_analytics/     69 Datentests · Referentielle Integrität · accepted_values
         │
         ▼  main schema
-Parquet Export                one file per mart/dim
+Parquet Export                Eine Datei pro Mart/Dim
   export_parquet.py
         │
         ▼  data/processed/
-Power BI Dashboard            star schema · live refresh from local Parquet
+Power BI Dashboard            Sternschema · Live-Aktualisierung aus lokalem Parquet
 ```
 
 **Stack:** Python · DuckDB · dbt Core · Power BI · GitHub Actions
 
 ---
 
-## Key Engineering Decisions
+## Technische Entscheidungen
 
-### Incremental Loading
-The ETL tracks processed `session_keys` in a local state file (`.etl_state.json`). On each run, only new sessions are fetched — avoiding redundant API calls across 10 endpoints. A `--backfill` flag allows selective re-ingestion of specific endpoints without a full reload.
+### Inkrementelles Laden
+Der ETL verfolgt verarbeitete `session_keys` in einer lokalen State-Datei (`.etl_state.json`). Bei jedem Lauf werden nur neue Sessions abgerufen — redundante API-Aufrufe über 10 Endpunkte werden vermieden. Ein `--backfill`-Flag ermöglicht die gezielte Nachladung einzelner Endpunkte ohne vollständigen Reload.
 
-### Parallel API Fetching
-Session-level endpoints are fetched concurrently using `ThreadPoolExecutor` with 4 workers and per-worker retry/backoff logic. This reduces ingestion time by ~4x while staying within API rate limits.
+### Parallele API-Abfragen
+Session-basierte Endpunkte werden gleichzeitig mit `ThreadPoolExecutor` und 4 Workern abgerufen, mit eigenem Retry/Backoff-Mechanismus pro Worker. Das reduziert die Ladezeit um ~4x bei gleichzeitiger Einhaltung der API-Rate-Limits.
 
-### mtime-Based Change Detection
-`load_to_duckdb.py` compares file modification timestamps before reloading. Unchanged Parquet files are skipped entirely, keeping DuckDB loads fast even with a growing number of tables.
+### mtime-basierte Änderungserkennung
+`load_to_duckdb.py` vergleicht Datei-Änderungszeitstempel vor dem Neuladen. Unveränderte Parquet-Dateien werden komplett übersprungen — die DuckDB-Ladevorgänge bleiben auch bei wachsender Tabellenanzahl schnell.
 
-### Star Schema Data Model
-Rather than denormalizing everything into flat fact tables, the dbt mart layer follows a proper star schema. Power BI relationships replace redundant joins, reducing data volume and keeping dimension data (driver images, team logos) in one place.
+### Sternschema-Datenmodell
+Statt alles in flache Fact-Tabellen zu denormalisieren, folgt die dbt-Mart-Schicht einem sauberen Sternschema. Power-BI-Beziehungen ersetzen redundante Joins, reduzieren das Datenvolumen und halten Dimensionsdaten (Fahrerbilder, Teamlogos) zentral an einem Ort.
 
-### Data Quality as Code
-Every staging model has dbt tests for `not_null`, `unique`, `relationships` (referential integrity), and `accepted_values`. Custom SQL tests catch business-logic violations like negative lap times or out-of-range humidity values.
+### Datenqualität als Code
+Jedes Staging-Modell hat dbt-Tests für `not_null`, `unique`, `relationships` (referentielle Integrität) und `accepted_values`. Eigene SQL-Tests prüfen Geschäftslogik wie negative Rundenzeiten oder ungültige Luftfeuchtewerte.
 
 ---
 
-## Data Model
+## Datenmodell
 
 ```
 dim_drivers ────────────────────────────────────┐
@@ -95,102 +95,102 @@ dim_meetings ──────────────────────�
 
 ---
 
-## Data Sources
+## Datenquellen
 
-| Endpoint | Raw Table | Rows (2026) | Description |
+| Endpunkt | Raw-Tabelle | Zeilen (2026) | Beschreibung |
 |---|---|---|---|
-| `/sessions` | `raw.sessions` | 126 | Practice, Qualifying, Race sessions |
-| `/meetings` | `raw.meetings` | 26 | Grand Prix weekends |
-| `/drivers` | `raw.drivers` | ~2000 | Driver info per session |
-| `/laps` | `raw.laps` | ~49000 | Lap times per driver |
-| `/weather` | `raw.weather` | ~12000 | Track conditions |
-| `/position` | `raw.positions` | ~46000 | Car positions during sessions |
-| `/stints` | `raw.stints` | — | Tyre compound & stint data |
-| `/championship_drivers` | `raw.championship_drivers` | 154 | WDC standings per race |
-| `/championship_teams` | `raw.championship_teams` | 66 | WCC standings per race |
-| `/session_results` (derived) | `raw.session_results` | 789 | Final classifications |
+| `/sessions` | `raw.sessions` | 126 | Training, Qualifying, Rennen |
+| `/meetings` | `raw.meetings` | 26 | Grand-Prix-Wochenenden |
+| `/drivers` | `raw.drivers` | ~2.000 | Fahrerinfos pro Session |
+| `/laps` | `raw.laps` | ~49.000 | Rundenzeiten pro Fahrer |
+| `/weather` | `raw.weather` | ~12.000 | Streckenbedingungen |
+| `/position` | `raw.positions` | ~46.000 | Fahrzeugpositionen während Sessions |
+| `/stints` | `raw.stints` | — | Reifencompound & Stint-Daten |
+| `/championship_drivers` | `raw.championship_drivers` | 154 | WM-Stand Fahrer nach jedem Rennen |
+| `/championship_teams` | `raw.championship_teams` | 66 | WM-Stand Konstrukteure nach jedem Rennen |
+| `/session_results` (abgeleitet) | `raw.session_results` | 789 | Endklassifikationen |
 
 ---
 
-## Project Structure
+## Projektstruktur
 
 ```
 f1-analytics/
 ├── ingestion/
-│   └── openf1_etl.py              # ETL: incremental loading, parallel fetch, backfill
+│   └── openf1_etl.py              # ETL: inkrementelles Laden, parallele Abfragen, Backfill
 ├── warehouse/
-│   ├── load_to_duckdb.py          # Load: mtime-based change detection
-│   └── export_parquet.py          # Export: marts → Parquet for Power BI
-├── transform/f1_analytics/        # dbt project
+│   ├── load_to_duckdb.py          # Laden: mtime-basierte Änderungserkennung
+│   └── export_parquet.py          # Export: Marts → Parquet für Power BI
+├── transform/f1_analytics/        # dbt-Projekt
 │   ├── models/
-│   │   ├── staging/               # stg_* — clean & type-cast raw data
-│   │   └── marts/                 # dim_* + fact_* — star schema
+│   │   ├── staging/               # stg_* — Rohdaten bereinigen & typisieren
+│   │   └── marts/                 # dim_* + fact_* — Sternschema
 │   ├── seeds/
-│   │   └── driver_images.csv      # Custom driver & team image URLs
-│   └── tests/                     # Custom SQL tests (business logic)
+│   │   └── driver_images.csv      # Eigene Fahrer- & Teambild-URLs
+│   └── tests/                     # Eigene SQL-Tests (Geschäftslogik)
 ├── data/
-│   ├── raw/                       # Parquet from API (gitignored)
-│   └── processed/                 # dbt exports for Power BI (gitignored)
+│   ├── raw/                       # Parquet von API (gitignored)
+│   └── processed/                 # dbt-Exporte für Power BI (gitignored)
 └── .github/workflows/
-    └── f1_pipeline.yml            # Weekly CI/CD (Monday 06:00 UTC)
+    └── f1_pipeline.yml            # Wöchentliche CI/CD (Montag 06:00 UTC)
 ```
 
 ---
 
 ## Dashboard
 
-The Power BI dashboard covers:
+Das Power-BI-Dashboard umfasst:
 
-- Lap time comparison per driver and event
-- Sector times (S1 / S2 / S3) breakdown
-- Tyre strategy — compound usage and stint lengths
-- Championship standings (drivers & constructors) after each race
-- Starting grid vs. final race result
-- Weather conditions and correlation with lap times
-- Driver portraits and team logos via custom image URLs
+- Rundenzeitenvergleich pro Fahrer und Event
+- Sektorzeiten (S1 / S2 / S3) im Detail
+- Reifenstrategie — Compound-Nutzung und Stint-Längen
+- WM-Stand (Fahrer & Konstrukteure) nach jedem Rennen
+- Startaufstellung vs. Rennendergebnis
+- Wetterbedingungen und Korrelation mit Rundenzeiten
+- Fahrerportraits und Teamlogos über eigene Bild-URLs
 
 ---
 
-## How to Run Locally
+## Lokale Ausführung
 
-### Prerequisites
+### Voraussetzungen
 
 ```bash
 pip install duckdb pandas pyarrow requests dbt-core dbt-duckdb
 ```
 
-### Full Pipeline
+### Komplette Pipeline
 
 ```bash
-# 1. Fetch data from OpenF1 API (incremental)
+# 1. Daten von OpenF1 API abrufen (inkrementell)
 python ingestion/openf1_etl.py
 
-# 2. Load into DuckDB
+# 2. In DuckDB laden
 python warehouse/load_to_duckdb.py
 
-# 3. Transform with dbt
+# 3. Mit dbt transformieren
 cd transform/f1_analytics
 dbt run
 dbt test
 
-# 4. Export to Parquet
+# 4. Nach Parquet exportieren
 python warehouse/export_parquet.py
 ```
 
-### Backfill a Specific Endpoint
+### Einzelne Endpunkte nachladen
 
 ```bash
 python ingestion/openf1_etl.py --backfill stints championship_drivers
 ```
 
-### Explore the Data
+### Daten erkunden
 
 ```bash
 duckdb warehouse/f1.duckdb
-# then: SELECT * FROM raw.laps LIMIT 10;
+# dann: SELECT * FROM raw.laps LIMIT 10;
 ```
 
-### dbt Lineage & Docs
+### dbt Lineage & Dokumentation
 
 ```bash
 cd transform/f1_analytics
@@ -200,28 +200,28 @@ dbt docs serve
 
 ---
 
-## Automated Pipeline (CI/CD)
+## Automatisierte Pipeline (CI/CD)
 
-GitHub Actions triggers every **Monday at 06:00 UTC** after race weekends:
+GitHub Actions startet jeden **Montag um 06:00 UTC** nach Rennwochenenden:
 
 ```
-Schedule trigger
-      ↓
-openf1_etl.py       # fetch new sessions only
-      ↓
-load_to_duckdb.py   # reload changed files only
-      ↓
-dbt run             # rebuild affected models
-      ↓
-dbt test            # validate 69 data tests
-      ↓
-export_parquet.py   # refresh Power BI source files
+Zeitgesteuerte Ausführung
+        ↓
+openf1_etl.py           # Nur neue Sessions abrufen
+        ↓
+load_to_duckdb.py       # Nur geänderte Dateien neu laden
+        ↓
+dbt run                 # Betroffene Modelle neu bauen
+        ↓
+dbt test                # 69 Datentests validieren
+        ↓
+export_parquet.py       # Power-BI-Quelldateien aktualisieren
 ```
 
-Manual trigger available via `workflow_dispatch` for on-demand runs.
+Manueller Start jederzeit über `workflow_dispatch` möglich.
 
 ---
 
-## License
+## Lizenz
 
 MIT
