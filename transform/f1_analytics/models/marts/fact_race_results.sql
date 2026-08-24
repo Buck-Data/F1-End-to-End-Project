@@ -13,7 +13,7 @@ SELECT
     s.session_type,
     s.date_start        AS session_date,
 
-    d.driver_number,
+    l.driver_number,
     d.full_name,
     d.name_acronym,
     d.team_name,
