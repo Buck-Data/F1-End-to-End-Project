@@ -22,14 +22,9 @@ models:
           - not_null
           - accepted_values:
               values:
-                - 'Practice 1'
-                - 'Practice 2'
-                - 'Practice 3'
+                - 'Practice'
                 - 'Qualifying'
                 - 'Race'
-                - 'Sprint'
-                - 'Sprint Qualifying'
-                - 'Sprint Shootout'
       - name: date_start
         tests:
           - not_null
@@ -184,7 +179,7 @@ models:
           - not_null
           - accepted_values:
               arguments:
-                values: ['SOFT', 'MEDIUM', 'HARD', 'INTERMEDIATE', 'WET', 'TEST_UNKNOWN']
+                values: ['SOFT', 'MEDIUM', 'HARD', 'INTERMEDIATE', 'WET', 'UNKNOWN', 'TEST_UNKNOWN']
 
   - name: stg_positions
     description: "Driver positions session"

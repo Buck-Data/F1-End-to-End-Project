@@ -31,6 +31,9 @@ jobs:
       - name: DuckDB laden
         run: python warehouse/load_to_duckdb.py
 
+      - name: dbt seeds laden
+        run: dbt seed --project-dir transform/f1_analytics --profiles-dir .dbt
+
       - name: dbt ausführen
         run: dbt run --project-dir transform/f1_analytics --profiles-dir .dbt
 

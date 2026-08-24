@@ -1,4 +1,4 @@
-SELECT
+SELECT DISTINCT
     session_key,
     driver_number,
     lap_number,

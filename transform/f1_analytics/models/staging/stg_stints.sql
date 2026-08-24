@@ -5,7 +5,7 @@ SELECT
     stint_number,
     lap_start,
     lap_end,
-    compound,
+    COALESCE(compound, 'UNKNOWN') AS compound,
     tyre_age_at_start
 FROM raw.stints
 WHERE session_key IS NOT NULL
